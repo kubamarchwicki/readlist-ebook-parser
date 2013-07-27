@@ -1,0 +1,13 @@
+{
+    "author": "Jakub Marchwicki",
+    "ebook_title": "Zazółść żółtą jaźl",
+    "default_section_name": "The Unread list",
+    "list_configuration": {
+        "pocket": {
+            "username": "site_username",
+            "password": "site_password",
+            //getpocket sort attribute
+            "list_order": "newest"
+        }
+    }
+}

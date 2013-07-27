@@ -1,0 +1,26 @@
+{
+    "author": "Jakub Marchwicki",
+    "ebook_title": "Zazółść żółtą jaźl",
+    "sections": [
+        {
+            "name": "The Unread list",
+            "articles": [
+                {
+                    "url": "http://t.co/VV5nVqi",
+                    "title": "Optional page title"
+                },
+                {
+                    "url": "http://m.onet.pl/wiadomosci/4986407,detal.html"
+                }
+            ]
+        },
+        {
+            "name": "The best of the best",
+            "articles": [
+                {
+                    "url": "http://www.uie.com/brainsparks/2011/12/30/the-hands-vs-the-brains/"
+                }
+            ]
+        }
+    ]
+}
