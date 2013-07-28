@@ -1,10 +1,11 @@
 import uuid
 import logging
 import tempfile
+import random
+import string
 import urllib2 as urllib
 
 from bs4  import BeautifulSoup
-from readpick import id_generator
 from readpick.mobilizer import InstapaperMobilizer
 
 logger = logging.getLogger(__name__)
@@ -29,6 +30,8 @@ default_not_found_template = '''<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Tra
     </body>
 </html>'''
 
+def id_generator(r = 8):
+    return ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(r))
 
 class Ebook(object):
     """

@@ -1,0 +1,36 @@
+{
+    "author": "Jakub Marchwicki",
+    "ebook_title": "Readlist 28/07",
+    "sections": [
+        {
+            "name": "The Unread list",
+            "articles": [
+                {
+                    "url": "https://medium.com/what-i-learned-building/16f6de3b7512"
+                },
+                {
+                    "url": "http://www.startuplessonslearned.com/2013/07/lean-startup-beyond-tech-sector.html"
+                },
+                {
+                    "url": "http://www.leanessays.com/2002/01/wicked-problems.html?m=1"
+                },
+                {
+                    "url": "http://blogs.mulesoft.org/the-lean-startup-meet-enterprise/"
+                },
+                {
+                    "url": "http://www.startuplessonslearned.com/2012/11/bringing-lean-startup-to-life-at-ge.html"
+                },
+                {
+                    "url": "http://webstandardssherpa.com/reviews/leaning-into-longform/"
+                },
+                {
+                    "url": "http://www.leanessays.com/2010/12/product-owner-problem.html?m=1"
+                },
+                {
+                    "url": "http://blog.uxpin.com/1375/lean-ux-vs-agile-ux-is-there-a-difference/"
+                }
+
+            ]
+        }
+    ]
+}
