@@ -5,7 +5,7 @@ import random
 import string
 import urllib2 as urllib
 
-from bs4  import BeautifulSoup
+from bs4 import BeautifulSoup
 from readpick.mobilizer import InstapaperMobilizer
 
 logger = logging.getLogger(__name__)
@@ -30,8 +30,10 @@ default_not_found_template = '''<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Tra
     </body>
 </html>'''
 
+
 def id_generator(r = 8):
     return ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(r))
+
 
 class Ebook(object):
     """
@@ -92,6 +94,13 @@ class Ebook(object):
     def download(self):
         [section.download() for section in self.sections]
 
+    def is_download_completed(self):
+        downloaded = True
+        [downloaded and section.is_download_completed() for section in self.sections]
+        logger.debug("Ebook download completed.")
+        return downloaded
+
+
 
 class Section(object):
     name = "Unread list"
@@ -112,9 +121,17 @@ class Section(object):
     def download(self):
         [article.download_text() for article in self.articles]
 
+    def is_download_completed(self):
+        downloaded = True
+        [downloaded and page.is_download_completed() for page in self.articles]
+        logger.debug("Section download completed.")
+        return downloaded
+
+
 
 class Page(object):
-    
+
+    downloaded = False
     url = None
     filename = None
     title = None
@@ -170,6 +187,9 @@ class Page(object):
             logger.info("Page text present - no need to download %s" % (self.url))
         
         self.download_images()
+
+        logger.debug("Page download completed.")
+        self.downloaded = True
         
     def download_images(self, domain=None):
         soup = BeautifulSoup(self.text)
@@ -192,6 +212,7 @@ class Page(object):
             
             name = 'images/img_%s%s' % (id_generator(), suffix)
             image['src'] = name
+            logger.debug("Downloaded image %s" % src)
             self.images[name] = i       
          
         self.text = tempfile.TemporaryFile()
@@ -199,3 +220,6 @@ class Page(object):
         self.text.seek(0) 
 
         logger.info("Downloaded %s images for url: %s" % (len(self.images), self.url))
+
+    def is_download_completed(self):
+        return self.downloaded

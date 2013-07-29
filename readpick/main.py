@@ -7,7 +7,9 @@ import shutil
 from model import Ebook
 from epub import Epub
 
+logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
+
 
 def run():
     parser = argparse.ArgumentParser(description='Process reading lists to and save it as an ebook')
@@ -27,9 +29,10 @@ def controller(args):
 
     ebook = Ebook.fromJson(args.data.read())
     ebook.download()
-    epub = Epub(ebook)
-    archive = epub.create_archive()
-    shutil.copyfileobj(archive, open(args.output, 'w'))
+    if ebook.is_download_completed():
+        epub = Epub(ebook)
+        archive = epub.create_archive()
+        shutil.copyfileobj(archive, open(args.output, 'w'))
 
 
 if __name__ == "__main__":
