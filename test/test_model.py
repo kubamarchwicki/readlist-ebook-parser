@@ -3,7 +3,7 @@ import unittest
 import re
 from bs4 import BeautifulSoup
 
-import readpick.model as model
+import readpick.ebook.model as model
 
 class EbookModelTest(unittest.TestCase):
 

@@ -6,7 +6,7 @@ import string
 import urllib2 as urllib
 
 from bs4 import BeautifulSoup
-from readpick.mobilizer import InstapaperMobilizer
+from readpick.ebook.mobilizer import InstapaperMobilizer
 
 logger = logging.getLogger(__name__)
 
@@ -199,10 +199,11 @@ class Page(object):
         for image in image_list:
             src = image['src']
 
+            logger.debug("Downloading image %s" % src)
             #ignore dynamic / 'ad-based-images' - images without suffix
             suffix = src[src.rfind('.'):]
-            if len(suffix) > 5:
-                logger.debug("Could not discover a suffix for file: %s" % src)
+            if len(suffix) > 5 or not src.startswith('http'):
+                logger.debug("Could not download: %s" % src)
                 image.extract()
                 continue
                 
@@ -212,14 +213,14 @@ class Page(object):
             
             name = 'images/img_%s%s' % (id_generator(), suffix)
             image['src'] = name
-            logger.debug("Downloaded image %s" % src)
             self.images[name] = i       
          
         self.text = tempfile.TemporaryFile()
         self.text.write(soup.prettify().encode('utf-8'))
         self.text.seek(0) 
 
-        logger.info("Downloaded %s images for url: %s" % (len(self.images), self.url))
+        if len(self.images) > 0:
+            logger.info("Downloaded %s images for url: %s" % (len(self.images), self.url))
 
     def is_download_completed(self):
         return self.downloaded

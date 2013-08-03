@@ -5,7 +5,7 @@ import logging
 import urllib2 as urllib
 
 from bs4 import BeautifulSoup
-from readpick.mobilizer import InstapaperMobilizer
+from readpick.ebook.mobilizer import InstapaperMobilizer
 
 class MockedInstapaperMobilizerTest(unittest.TestCase):
 
