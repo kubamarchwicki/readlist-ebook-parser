@@ -91,8 +91,8 @@ class Ebook(object):
         o = json.loads(request)
         return cls(**o)
         
-    def download(self):
-        [section.download() for section in self.sections]
+    def download(self, mobilizer=InstapaperMobilizer()):
+        [section.download(mobilizer) for section in self.sections]
 
     def is_download_completed(self):
         downloaded = True
@@ -118,8 +118,8 @@ class Section(object):
     def fromDict(cls, o):
         return cls(**o)
     
-    def download(self):
-        [article.download_text() for article in self.articles]
+    def download(self, mobilizer):
+        [article.download_text(mobilizer) for article in self.articles]
 
     def is_download_completed(self):
         downloaded = True
@@ -154,7 +154,7 @@ class Page(object):
     def fromDict(cls, o):
         return cls(**o)
 
-    def download_text(self):
+    def download_text(self, mobilizer):
         if self.filename is None:
             self.filename = 'text_%s.html' % id_generator()
         
@@ -162,17 +162,17 @@ class Page(object):
             logger.debug("Downloading url: %s" % self.url)
             
             #grab url
-            u = urllib.urlopen(InstapaperMobilizer.url(self.url))
+            u = urllib.urlopen(mobilizer.url(self.url))
             
             #convert to soup
             soup = BeautifulSoup(u.read())
             
             #check for not mobilized pages
-            if InstapaperMobilizer.is_correctly_mobilized(soup) is False:
+            if mobilizer.is_correctly_mobilized(soup) is False:
                 soup = BeautifulSoup(default_not_found_template % (self.url))
                 logger.debug("URL wasn't properly mobilized - substituted with default page")
                 
-            soup = InstapaperMobilizer.post_process_html(soup)
+            soup = mobilizer.post_process_html(soup)
             
             self.text = tempfile.TemporaryFile()
             self.text.write(soup.prettify().encode('utf-8'))

@@ -9,16 +9,13 @@ from bs4 import BeautifulSoup, Comment
 class InstapaperMobilizer(object):
     mobilizer_url = "http://www.instapaper.com/m?u=%s"
 
-    @staticmethod
-    def url(base_url):
-        return (InstapaperMobilizer.mobilizer_url % base_url)
+    def url(self, base_url):
+        return self.mobilizer_url % base_url
 
-    @staticmethod
-    def is_correctly_mobilized(soup):
+    def is_correctly_mobilized(self, soup):
         return False if soup.find(text=re.compile('Instapaper')) is None else True
 
-    @staticmethod
-    def post_process_html(soup):
+    def post_process_html(self, soup):
 
         #check for invalid html
         if soup.find(text=re.compile("instapaper:crawl-error")) is not None:

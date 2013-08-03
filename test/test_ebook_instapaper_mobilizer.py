@@ -274,13 +274,14 @@ na wprowadzenie nowych zasad egzaminów.</p>
     </body>
 </html>
 ''')
-        
-        self.assertTrue(InstapaperMobilizer.is_correctly_mobilized(soup), "Correctly mobilized")
+        mobilizer = InstapaperMobilizer()
+        self.assertTrue(mobilizer.is_correctly_mobilized(soup), "Correctly mobilized")
         
     def test_incorrect_mobilization(self):
         soup = BeautifulSoup('''''')
-        
-        self.assertFalse(InstapaperMobilizer.is_correctly_mobilized(soup), "Not mobilized")
+
+        mobilizer = InstapaperMobilizer()
+        self.assertFalse(mobilizer.is_correctly_mobilized(soup), "Not mobilized")
 
 
 class InstapaperMobilizerTest(unittest.TestCase):
@@ -290,10 +291,11 @@ class InstapaperMobilizerTest(unittest.TestCase):
                             level=logging.DEBUG)
 
     def test_complete_download_and_mobilization(self):
-        u = urllib.urlopen(InstapaperMobilizer.url("http://m.onet.pl/wiadomosci/4986708,detal.html"))
+        mobilizer = InstapaperMobilizer()
+        u = urllib.urlopen(mobilizer.url("http://m.onet.pl/wiadomosci/4986708,detal.html"))
         soup = BeautifulSoup(u.read())
-        self.assertTrue(InstapaperMobilizer.is_correctly_mobilized(soup), "Correctly mobilized")
-        soup = InstapaperMobilizer.post_process_html(soup)
+        self.assertTrue(mobilizer.is_correctly_mobilized(soup), "Correctly mobilized")
+        soup = mobilizer.post_process_html(soup)
         print soup.prettify()
 
 if __name__ == '__main__':

@@ -2,6 +2,7 @@ import logging
 import unittest
 import re
 from bs4 import BeautifulSoup
+from readpick.ebook.mobilizer import InstapaperMobilizer
 
 import readpick.ebook.model as model
 
@@ -14,7 +15,7 @@ class EbookModelTest(unittest.TestCase):
     def test_page_download(self):
         p = model.Page()
         p.url = "http://www.cooper.com/2011/03/06/more_better_faster_ux_design"
-        p.download_text()
+        p.download_text(mobilizer=InstapaperMobilizer())
 
         self.assertEqual(len(p.images), 4)
 
@@ -28,7 +29,7 @@ class EbookModelTest(unittest.TestCase):
         s.articles.append(model.Page(url="http://sport.wp.pl/martykul.html?wid=14377651"))
         s.articles.append(model.Page(url="http://sport.wp.pl/martykul.html?wid=14374592&"))
 
-        s.download()
+        s.download(mobilizer=InstapaperMobilizer())
         filenames = set([x.filename for x in s.articles])
         self.assertEquals(len(filenames), 2)
         self.assertNotEqual(s.articles[0].filename, s.articles[1].filename)
@@ -44,7 +45,7 @@ class EbookModelTest(unittest.TestCase):
         s.articles.append(model.Page(text=text1))
         s.articles.append(model.Page(text=text2))
 
-        s.download()
+        s.download(mobilizer=InstapaperMobilizer())
         filenames = set([x.filename for x in s.articles])
         self.assertEquals(len(filenames), 2)
         self.assertNotEqual(s.articles[0].filename, s.articles[1].filename)
@@ -55,7 +56,7 @@ class EbookModelTest(unittest.TestCase):
         p = model.Page()
         p.url = "https://www.online.citibank.pl/retail/blue/img/logo.gif"
 
-        p.download_text()
+        p.download_text(mobilizer=InstapaperMobilizer())
 
         self.assertEqual(len(p.images), 0)
 
