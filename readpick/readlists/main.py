@@ -23,7 +23,6 @@ def run():
 
 
 def controller(args):
-    #so far - I'm not trying to log in a person and authorize
     pocket = Pocket(username=args.username, password=args.password)
     article_list = pocket.get_list()
 

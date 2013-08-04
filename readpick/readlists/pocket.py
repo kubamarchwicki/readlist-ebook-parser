@@ -90,10 +90,28 @@ class Pocket3:
         return response_json['code']
 
     def is_application_authorized(self, request_token):
+        """
+        <form method="POST" action="/login_process">
+            <section id="login_header" class="alignedToForm">Log In To Pocket</section>
+            <section id="login_form">
+                <div class="form_field"><span>Username:</span> <input name="feed_id"  type="text" /></div>
+                <div class="form_field"><span>Password:</span> <input name="password" type="password" /></div>
+                <input type="hidden" name="form_check" value="dUp9DBmrBuT" />
+                <input type="hidden" name="source" value="/auth/authorize?request_token=d806da89-57eb-3bda-221b-e5adcd&redirect_uri=http://mini.wp.pl" />
+                <input type="hidden" name="route" value="/auth/approve_access?request_token=d806da89-57eb-3bda-221b-e5adcd&from_login=1&permission=md&approve_flag=1&redirect_uri=http%3A%2F%2Fmini.wp.pl" />
+            </section>
+            <section id="forgot_password" class="alignedToForm"><a href="/forgot">Forgot your password?</a></section>
+            <section id="canHazAuthorization" class="alignedToForm">
+                <div id="denyButton"  class="button left  gray">No, thanks</div>
+                <input type="submit" value="Authorize" id="allowButton" class="button right red needsLogin"></div>
+            </section>
+        </form>
+        """
         #urllib has never been authorised hence will always return false
         return False
 
     def  authorize_application(self, request_token):
+        #TODO: authorize application internally, by logging to pocket - not through an external browser
         import webbrowser
         import threading
         threading.Thread(target=lambda: webbrowser.open_new_tab(self.authorize_url % request_token)).start()
@@ -134,5 +152,6 @@ class Pocket3:
 
         response = urllib2.urlopen(request)
         response_json = json.loads(response.read())
-        return [{'url': response_json['list'][item_id]['resolved_url'],
-                  'title': response_json['list'][item_id]['resolved_title']} for item_id in response_json['list']]
+        return [{'item_id': item_id,
+                 'url': response_json['list'][item_id]['resolved_url'],
+                 'title': response_json['list'][item_id]['resolved_title']} for item_id in response_json['list']]

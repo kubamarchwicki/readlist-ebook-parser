@@ -33,6 +33,9 @@ def controller(args):
         archive = epub.create_archive()
         shutil.copyfileobj(archive, open(args.output, 'w'))
 
+        #TODO: print processed urls
+
+
 
 if __name__ == "__main__":
     run()

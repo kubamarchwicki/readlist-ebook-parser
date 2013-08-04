@@ -10,7 +10,7 @@ class PocketAccessTest(unittest.TestCase):
         logging.basicConfig(format="[%(name)s] %(levelname)s: %(message)s",
                             level=logging.DEBUG)
 
-    def test_authorize_session(self):
+    def test_authorized_application(self):
         pocket = Pocket()
         self.assertIsNone(pocket.access_token)
         pocket.authorize_session()
