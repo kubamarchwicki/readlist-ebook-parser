@@ -1,6 +1,6 @@
 import logging
 import unittest
-from readpick.readlists.pocket import Pocket
+from readpick.readlists.pocket import Pocket3 as Pocket
 import readpick.ebook.model as model
 
 

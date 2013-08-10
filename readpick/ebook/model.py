@@ -4,6 +4,7 @@ import tempfile
 import random
 import string
 import urllib2 as urllib
+from contextlib import closing
 
 from bs4 import BeautifulSoup
 from readpick.ebook.mobilizer import InstapaperMobilizer
@@ -162,29 +163,28 @@ class Page(object):
             logger.debug("Downloading url: %s" % self.url)
             
             #grab url
-            u = urllib.urlopen(mobilizer.url(self.url))
+            with closing(urllib.urlopen(mobilizer.url(self.url))) as article:
+                #convert to soup
+                soup = BeautifulSoup(article.read())
             
-            #convert to soup
-            soup = BeautifulSoup(u.read())
+                #check for not mobilized pages
+                if mobilizer.is_correctly_mobilized(soup) is False:
+                    soup = BeautifulSoup(default_not_found_template % self.url)
+                    logger.debug("URL wasn't properly mobilized - substituted with default page")
+
+                soup = mobilizer.post_process_html(soup)
+
+                self.text = tempfile.TemporaryFile()
+                self.text.write(soup.prettify().encode('utf-8'))
+                self.text.seek(0)
             
-            #check for not mobilized pages
-            if mobilizer.is_correctly_mobilized(soup) is False:
-                soup = BeautifulSoup(default_not_found_template % (self.url))
-                logger.debug("URL wasn't properly mobilized - substituted with default page")
-                
-            soup = mobilizer.post_process_html(soup)
-            
-            self.text = tempfile.TemporaryFile()
-            self.text.write(soup.prettify().encode('utf-8'))
-            self.text.seek(0)
-            
-            #TODO: try catch in case html doesn't have title tags
-            if self.title is None:
-                self.title = soup.html.head.title.string
+                #TODO: try catch in case html doesn't have title tags
+                if self.title is None:
+                    self.title = soup.html.head.title.string
     
-            logger.info("Downloaded url: %s" % (self.url))
+            logger.info("Downloaded url: %s" % self.url)
         else:
-            logger.info("Page text present - no need to download %s" % (self.url))
+            logger.info("Page text present - no need to download %s" % self.url)
         
         self.download_images()
 
@@ -206,15 +206,16 @@ class Page(object):
                 logger.debug("Could not download: %s" % src)
                 image.extract()
                 continue
-                
-            i = tempfile.TemporaryFile()
-            i.write(urllib.urlopen(src).read())
-            i.seek(0)
-            
-            name = 'images/img_%s%s' % (id_generator(), suffix)
-            image['src'] = name
-            self.images[name] = i       
-         
+
+            with closing(urllib.urlopen(src)) as imgsrc:
+                i = tempfile.TemporaryFile()
+                i.write(imgsrc.read())
+                i.seek(0)
+
+                name = 'images/img_%s%s' % (id_generator(), suffix)
+                image['src'] = name
+                self.images[name] = i
+
         self.text = tempfile.TemporaryFile()
         self.text.write(soup.prettify().encode('utf-8'))
         self.text.seek(0) 
