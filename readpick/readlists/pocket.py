@@ -131,11 +131,32 @@ class Pocket3:
                                           'X-Accept': 'application/json'}
         )
 
-        response = urllib2.urlopen(request)
+        try:
+            response = urllib2.urlopen(request)
+            response_json = json.loads(response.read())
+            logger.debug('Authorize response: %s' % response_json)
+            return response_json['access_token']
+        except urllib2.HTTPError as e:
+            print e.headers
+            raise
 
-        response_json = json.loads(response.read())
-        logger.debug('Authorize response: %s' % response_json)
-        return response_json['access_token']
+    def delete(self, items):
+        api_url = 'send?'
+        if self.access_token is None:
+            self.access_token = self.authorize_session()
+
+        actions = [{'action': 'delete', 'item_id': item_id} for item_id in items]
+        params = {'consumer_key': self.consumer_key, 'access_token': self.access_token, 'actions': json.dumps(actions)}
+        url_params = urllib.urlencode(params)
+        url = ''.join([self.base_api_url, api_url, url_params])
+
+        try:
+            response = urllib2.urlopen(url)
+            response_json = json.loads(response.read())
+            logger.debug('Delete response: %s' % response_json)
+        except urllib2.HTTPError as e:
+            print e.headers
+
 
     def get_list(self):
         api_url = 'get'
