@@ -18,7 +18,6 @@ class SystemFile(object):
         self.filename = filename
         self.content = content
 
-
 class Epub(object):
 
     __all_pages = []

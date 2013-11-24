@@ -6,3 +6,4 @@
 data/config.json
 
 *.conf
+*.sh

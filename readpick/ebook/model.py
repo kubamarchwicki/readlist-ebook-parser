@@ -35,6 +35,7 @@ default_not_found_template = '''<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Tra
 def id_generator(r = 8):
     return ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(r))
 
+#TODO: refactor in the same way jira-python is built
 
 class Ebook(object):
     """
@@ -67,7 +68,8 @@ class Ebook(object):
 
     Ebook.fromJson(request)
 
-    TODO: defensive programming - raise exceptions where model is not correct
+    #TODO: validate model upfront - raise exceptions where model is not correct
+    #TODO: http://www.alexconrad.org/2011/10/json-validation.html
     """
     uuid = uuid.uuid1()
     ebook_title = None 
@@ -156,6 +158,9 @@ class Page(object):
         return cls(**o)
 
     def download_text(self, mobilizer):
+        import time
+        time.sleep(30)
+
         if self.filename is None:
             self.filename = 'text_%s.html' % id_generator()
         
