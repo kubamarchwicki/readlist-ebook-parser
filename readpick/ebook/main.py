@@ -24,7 +24,6 @@ def run():
 
 
 def controller(args):
-
     input_json = ''.join(sys.stdin.readlines())
     ebook = Ebook.fromJson(input_json)
     ebook.download()
@@ -34,7 +33,6 @@ def controller(args):
         shutil.copyfileobj(archive, open(args.output, 'w'))
 
         #TODO: print processed urls
-
 
 
 if __name__ == "__main__":

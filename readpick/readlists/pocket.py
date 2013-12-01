@@ -186,6 +186,7 @@ class Pocket3:
 
         response = urllib2.urlopen(request)
         response_json = json.loads(response.read())
+        logger.debug("Reading list with %s items." % len(response_json['list']))
         return [{'item_id': item_id,
                  'url': response_json['list'][item_id]['resolved_url'],
                  'title': response_json['list'][item_id]['resolved_title']} for item_id in response_json['list']]

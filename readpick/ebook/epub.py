@@ -18,8 +18,8 @@ class SystemFile(object):
         self.filename = filename
         self.content = content
 
-class Epub(object):
 
+class Epub(object):
     __all_pages = []
     system_files = None
     ebook = None
@@ -31,8 +31,8 @@ class Epub(object):
         system_files["META-INF/containter.xml"] = container_xml
 
         #create templates for OEBPS/content.opf
-        self.__all_pages = reduce(lambda x, y: x+y, [section.articles for section in ebook.sections])
-        all_images = reduce(lambda x,y: x+y, [page.images.keys() for page in self.__all_pages])
+        self.__all_pages = reduce(lambda x, y: x + y, [section.articles for section in ebook.sections])
+        all_images = reduce(lambda x, y: x + y, [page.images.keys() for page in self.__all_pages])
         content_opf_data = {"ebook": ebook,
                             "htmls": map(lambda x: x.filename, self.__all_pages),
                             "images": map(lambda x: {"name": x, "mediaType": mimetypes.guess_type(x)[0]}, all_images)}
@@ -63,17 +63,16 @@ class Epub(object):
         filelist = []
         with zipfile.ZipFile(archive, "w") as fout:
             filelist.append("mimetype")
-            fout.writestr('mimetype', 'application/epub+zip', compress_type = zipfile.ZIP_STORED)
+            fout.writestr('mimetype', 'application/epub+zip', compress_type=zipfile.ZIP_STORED)
             for (filename, content) in self.system_files.items():
                 filelist.append(filename)
-                fout.writestr(filename, content.encode("utf-8"), compress_type = zipfile.ZIP_DEFLATED)
+                fout.writestr(filename, content.encode("utf-8"), compress_type=zipfile.ZIP_DEFLATED)
             for page in self.__all_pages:
                 filelist.append("OEBPS/%s" % page.filename)
-                fout.writestr('OEBPS/%s' % page.filename, page.text.read(), compress_type = zipfile.ZIP_DEFLATED)
+                fout.writestr('OEBPS/%s' % page.filename, page.text.read(), compress_type=zipfile.ZIP_DEFLATED)
                 for (name, image) in page.images.items():
                     filelist.append("OEBPS/%s" % name)
-                    fout.writestr('OEBPS/%s' % name, image.read(), compress_type = zipfile.ZIP_DEFLATED)
-
+                    fout.writestr('OEBPS/%s' % name, image.read(), compress_type=zipfile.ZIP_DEFLATED)
 
         logger.info("Created zipfile size: %s" % convert_bytes(archive.tell()))
         logger.debug("Archive file list: %s" % filelist)

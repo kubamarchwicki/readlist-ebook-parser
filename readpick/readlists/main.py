@@ -5,7 +5,7 @@ import argparse
 import logging
 import json
 from datetime import date
-from readpick.readlists.pocket import Pocket2 as Pocket
+from readpick.readlists.pocket import Pocket3 as Pocket
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
@@ -26,7 +26,8 @@ def controller(args):
     pocket = Pocket(username=args.username, password=args.password)
     article_list = pocket.get_list()
 
-    print output_template % (date.today().strftime("%d/%m"), json.dumps(article_list, indent=16))
+    print output_template % (date.today().strftime("%d/%m/%Y"), json.dumps(article_list, indent=16))
+
 
 output_template = """{
     "author": "Jakub Marchwicki",
@@ -38,7 +39,6 @@ output_template = """{
         }
     ]
 }"""
-
 
 if __name__ == "__main__":
     run()
