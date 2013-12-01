@@ -65,7 +65,8 @@ class Pocket3:
     -d '{"consumer_key":"17133-80559367051e5861029eba64", "access_token":"cd9516fb-2865-d68e-6ada-e5727f", "count":1}'
 
     """
-    base_api_url = 'https://getpocket.com/v3/'
+    base_url = 'https://getpocket.com/'
+    base_api_url = base_url + 'v3/'
     authorize_url = 'https://getpocket.com/auth/authorize?request_token=%s&redirect_uri=http://mini.wp.pl'
     consumer_key = Config().pocket_v3_consumer_key()
     access_token = None
@@ -78,9 +79,9 @@ class Pocket3:
     def get_request_token(self):
         api_url = 'oauth/request'
         request = urllib2.Request(url=''.join([self.base_api_url, api_url]),
-                                 data=json.dumps({'consumer_key': self.consumer_key, 'redirect_uri': 'authorized'}),
-                                 headers={'Content-type': 'application/json; charset=UTF8',
-                                          'X-Accept': 'application/json'}
+                                  data=json.dumps({'consumer_key': self.consumer_key, 'redirect_uri': 'authorized'}),
+                                  headers={'Content-type': 'application/json; charset=UTF8',
+                                           'X-Accept': 'application/json'}
         )
 
         response = urllib2.urlopen(request)
@@ -90,32 +91,45 @@ class Pocket3:
         return response_json['code']
 
     def is_application_authorized(self, request_token):
-        """
-        <form method="POST" action="/login_process">
-            <section id="login_header" class="alignedToForm">Log In To Pocket</section>
-            <section id="login_form">
-                <div class="form_field"><span>Username:</span> <input name="feed_id"  type="text" /></div>
-                <div class="form_field"><span>Password:</span> <input name="password" type="password" /></div>
-                <input type="hidden" name="form_check" value="dUp9DBmrBuT" />
-                <input type="hidden" name="source" value="/auth/authorize?request_token=d806da89-57eb-3bda-221b-e5adcd&redirect_uri=http://mini.wp.pl" />
-                <input type="hidden" name="route" value="/auth/approve_access?request_token=d806da89-57eb-3bda-221b-e5adcd&from_login=1&permission=md&approve_flag=1&redirect_uri=http%3A%2F%2Fmini.wp.pl" />
-            </section>
-            <section id="forgot_password" class="alignedToForm"><a href="/forgot">Forgot your password?</a></section>
-            <section id="canHazAuthorization" class="alignedToForm">
-                <div id="denyButton"  class="button left  gray">No, thanks</div>
-                <input type="submit" value="Authorize" id="allowButton" class="button right red needsLogin"></div>
-            </section>
-        </form>
-        """
         #urllib has never been authorised hence will always return false
         return False
 
-    def  authorize_application(self, request_token):
-        #TODO: authorize application internally, by logging to pocket - not through an external browser
-        import webbrowser
-        import threading
-        threading.Thread(target=lambda: webbrowser.open_new_tab(self.authorize_url % request_token)).start()
-        raw_input('')
+    def authorize_application(self, request_token):
+        """
+        <form method="POST" action="/login_process">
+                <div class="form_field"><span>Username:</span> <input name="feed_id"  type="text" /></div>
+                <div class="form_field"><span>Password:</span> <input name="password" type="password" /></div>
+                <input type="hidden" name="form_check" value="dUp9DBmrBuT" />
+                <input type="hidden" name="route" value="/auth/approve_access?request_token={request_token}&from_login=1&permission=md&approve_flag=1&redirect_uri=" />
+        </form>
+        """
+        api_url = 'login_process'
+
+        try:
+            import re
+            from urllib import urlencode
+            from cookielib import CookieJar
+
+            #authorize request
+            response = urllib2.urlopen(url=self.authorize_url % request_token)
+            page = response.read()
+
+            #take form's form_check field
+            match = re.search('name=.form_check.*value=.([a-zA-Z0-9]+).', page)
+            form_check = match.group(1)
+
+            form_data = dict(feed_id=self.username, password=self.password,
+                             form_check=form_check,
+                             route='/auth/approve_access?request_token=%s&from_login=1&permission=md&approve_flag=1&redirect_uri=' % request_token)
+
+            #login to the application to authorize app
+            cj = CookieJar()
+            opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
+            opener.open(self.base_url + api_url,
+                        urlencode(form_data))
+        except urllib2.HTTPError as e:
+            print e.headers
+            raise
 
     def authorize_session(self):
         api_url = 'oauth/authorize'
@@ -125,11 +139,10 @@ class Pocket3:
         if self.is_application_authorized(request_token) is False:
             self.authorize_application(request_token)
 
-        request = urllib2.Request(url=''.join([self.base_api_url, api_url]),
-                                 data=json.dumps({'consumer_key': self.consumer_key, 'code': request_token}),
-                                 headers={'Content-type': 'application/json; charset=UTF8',
-                                          'X-Accept': 'application/json'}
-        )
+        request = urllib2.Request(url=self.base_api_url + api_url,
+                                  data=json.dumps({'consumer_key': self.consumer_key, 'code': request_token}),
+                                  headers={'Content-type': 'application/json; charset=UTF8',
+                                           'X-Accept': 'application/json'})
 
         try:
             response = urllib2.urlopen(request)
@@ -142,6 +155,7 @@ class Pocket3:
 
     def delete(self, items):
         api_url = 'send?'
+
         if self.access_token is None:
             self.access_token = self.authorize_session()
 
@@ -157,9 +171,9 @@ class Pocket3:
         except urllib2.HTTPError as e:
             print e.headers
 
-
     def get_list(self):
         api_url = 'get'
+
         if self.access_token is None:
             self.access_token = self.authorize_session()
 
@@ -168,8 +182,7 @@ class Pocket3:
                                                    'access_token': self.access_token,
                                                    'count': 10}),
                                   headers={'Content-type': 'application/json; charset=UTF8',
-                                           'X-Accept': 'application/json'}
-        )
+                                           'X-Accept': 'application/json'})
 
         response = urllib2.urlopen(request)
         response_json = json.loads(response.read())
