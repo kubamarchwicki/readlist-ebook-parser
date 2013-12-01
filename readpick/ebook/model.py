@@ -158,6 +158,7 @@ class Page(object):
         return cls(**o)
 
     def download_text(self, mobilizer):
+        #TODO: remove this sleep when changed from Instapaper to smth else
         import time
         time.sleep(30)
 
