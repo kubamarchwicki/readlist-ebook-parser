@@ -214,14 +214,17 @@ class Page(object):
                 image.extract()
                 continue
 
-            with closing(urllib.urlopen(src)) as imgsrc:
-                i = tempfile.TemporaryFile()
-                i.write(imgsrc.read())
-                i.seek(0)
+            try: 
+                with closing(urllib.urlopen(src)) as imgsrc:
+                    i = tempfile.TemporaryFile()
+                    i.write(imgsrc.read())
+                    i.seek(0)
 
-                name = 'images/img_%s%s' % (id_generator(), suffix)
-                image['src'] = name
-                self.images[name] = i
+                    name = 'images/img_%s%s' % (id_generator(), suffix)
+                    image['src'] = name
+                    self.images[name] = i
+            except Exception as e:
+                print e.reason
 
         self.text = tempfile.TemporaryFile()
         self.text.write(soup.prettify().encode('utf-8'))
