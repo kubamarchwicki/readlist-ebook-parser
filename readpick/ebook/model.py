@@ -163,24 +163,22 @@ class Page(object):
             logger.debug("Downloading url: %s" % self.url)
 
             #grab url
-            with closing(urllib.urlopen(mobilizer.url(self.url))) as article:
-                #convert to soup
-                soup = BeautifulSoup(article.read())
+            soup = mobilizer.url_content(self.url)
 
-                #check for not mobilized pages
-                if mobilizer.is_correctly_mobilized(soup) is False:
-                    soup = BeautifulSoup(default_not_found_template % self.url)
-                    logger.debug("URL wasn't properly mobilized - substituted with default page")
+            #check for not mobilized pages
+            if mobilizer.is_correctly_mobilized(soup) is False:
+                soup = BeautifulSoup(default_not_found_template % self.url)
+                logger.debug("URL wasn't properly mobilized - substituted with default page")
 
-                soup = mobilizer.post_process_html(soup)
+            soup = mobilizer.post_process_html(soup)
 
-                self.text = tempfile.TemporaryFile()
-                self.text.write(soup.prettify().encode('utf-8'))
-                self.text.seek(0)
+            self.text = tempfile.TemporaryFile()
+            self.text.write(soup.prettify().encode('utf-8'))
+            self.text.seek(0)
 
-                #TODO: try catch in case html doesn't have title tags
-                if self.title is None:
-                    self.title = soup.html.head.title.string
+            #TODO: try catch in case html doesn't have title tags
+            if self.title is None:
+                self.title = soup.html.head.title.string
 
             logger.info("Downloaded url: %s" % self.url)
         else:

@@ -1,8 +1,8 @@
 # coding=UTF-8
 
-import logging
 import re
-
+import urllib2 as urllib
+from contextlib import closing
 from bs4 import BeautifulSoup, Comment
 
 
@@ -10,8 +10,9 @@ from bs4 import BeautifulSoup, Comment
 class InstapaperMobilizer(object):
     mobilizer_url = "http://mobilizer.instapaper.com/m?u=%s"
 
-    def url(self, base_url):
-        return self.mobilizer_url % base_url
+    def url_content(self, base_url):
+        with closing(urllib.urlopen(self.mobilizer_url % base_url)) as article:
+            return BeautifulSoup(article.read())
 
     def is_correctly_mobilized(self, soup):
         return True
