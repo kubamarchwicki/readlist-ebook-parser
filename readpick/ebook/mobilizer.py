@@ -1,12 +1,13 @@
 # coding=UTF-8
 
 import re
+import json
 import urllib2 as urllib
 from contextlib import closing
 from bs4 import BeautifulSoup, Comment
+from readpick.config import Config
 
 
-#TODO: different mobilizer than instapaper
 class InstapaperMobilizer(object):
     mobilizer_url = "http://mobilizer.instapaper.com/m?u=%s"
 
@@ -45,4 +46,21 @@ class InstapaperMobilizer(object):
         [tag.extract() for tag in soup.findAll('div', attrs={'id': 'controlbar_container'})]
         [tag.extract() for tag in soup.findAll('div', attrs={'id': 'footer'})]
 
+        return soup
+
+
+class ReadlistMobilizer(object):
+    token = Config().readlist_parser_api_token()
+    mobilizer_url = "http://www.readability.com/api/content/v1/parser?url=%s&token=%s"
+
+    def url_content(self, base_url):
+        url = self.mobilizer_url % (base_url, self.token)
+        with closing(urllib.urlopen(url)) as response:
+            response_json = json.loads(response.read())
+            return BeautifulSoup(response_json['content'])
+
+    def is_correctly_mobilized(self, soup):
+        return True
+
+    def post_process_html(self, soup):
         return soup

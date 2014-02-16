@@ -7,7 +7,7 @@ import urllib2 as urllib
 from contextlib import closing
 
 from bs4 import BeautifulSoup
-from readpick.ebook.mobilizer import InstapaperMobilizer
+from readpick.ebook.mobilizer import ReadlistMobilizer
 
 logger = logging.getLogger(__name__)
 
@@ -95,7 +95,7 @@ class Ebook(object):
         o = json.loads(request)
         return cls(**o)
 
-    def download(self, mobilizer=InstapaperMobilizer()):
+    def download(self, mobilizer=ReadlistMobilizer()):
         [section.download(mobilizer) for section in self.sections]
 
     def is_download_completed(self):
@@ -194,7 +194,6 @@ class Page(object):
         import time
 
         time.sleep(30)
-
 
     def download_images(self, domain=None):
         soup = BeautifulSoup(self.text)

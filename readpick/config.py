@@ -14,3 +14,6 @@ class Config(object):
 
     def pocket_v2_key_api(self):
         return self.config['pocket_v2_api_key']
+
+    def readlist_parser_api_token(self):
+        return self.config['readlist_parser_api_token']

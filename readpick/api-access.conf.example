@@ -1,3 +1,6 @@
 #Pocket API consumer API
 pocket_v3_consumer_key = "some_random_digits"
 pocket_v2_api_key = "some_random_digits"
+
+#Readlist textualize API token
+readlist_parser_api_token = "some_random_yadayada"
