@@ -85,7 +85,6 @@ class Pocket3:
         )
 
         response = urllib2.urlopen(request)
-
         response_json = json.loads(response.read())
         logger.debug('Request token response: %s' % response_json)
         return response_json['code']
@@ -136,13 +135,19 @@ class Pocket3:
 
         request_token = self.get_request_token()
 
-        if self.is_application_authorized(request_token) is False:
-            self.authorize_application(request_token)
+        #TODO: fix application authorization process
+        # if self.is_application_authorized(request_token) is False:
+        #     self.authorize_application(request_token)
+
+        print 'Please authorize the app using the following url and press ENTER here'
+        print self.authorize_url % request_token
+        raw_input()
 
         request = urllib2.Request(url=self.base_api_url + api_url,
                                   data=json.dumps({'consumer_key': self.consumer_key, 'code': request_token}),
                                   headers={'Content-type': 'application/json; charset=UTF8',
                                            'X-Accept': 'application/json'})
+        self.log_url_data("oauth/authorize", request)
 
         try:
             response = urllib2.urlopen(request)
@@ -183,10 +188,14 @@ class Pocket3:
                                                    'count': 10}),
                                   headers={'Content-type': 'application/json; charset=UTF8',
                                            'X-Accept': 'application/json'})
-
         response = urllib2.urlopen(request)
         response_json = json.loads(response.read())
         logger.debug("Reading list with %s items." % len(response_json['list']))
         return [{'item_id': item_id,
                  'url': response_json['list'][item_id]['resolved_url'],
                  'title': response_json['list'][item_id]['resolved_title']} for item_id in response_json['list']]
+
+    def log_url_data(self, msg, request):
+        logger.debug("""%s URL: %s
+        Data: %s
+        """ % (msg, request.get_full_url(), request.get_data()))
