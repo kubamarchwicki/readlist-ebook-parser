@@ -71,10 +71,16 @@ class Pocket3:
     consumer_key = Config().pocket_v3_consumer_key()
     access_token = None
 
+<<<<<<< HEAD
     def __init__(self, username=None, password=None):
         print self.consumer_key
+=======
+    def __init__(self, username=None, password=None, favourite=False, count=10):
+>>>>>>> aa353bb... Limit number of articles in a single list
         self.username = username
         self.password = password
+        self.favourite = favourite
+        self.count = count
 
     def get_request_token(self):
         api_url = 'oauth/request'
@@ -185,9 +191,12 @@ class Pocket3:
         request = urllib2.Request(url=''.join([self.base_api_url, api_url]),
                                   data=json.dumps({'consumer_key': self.consumer_key,
                                                    'access_token': self.access_token,
-                                                   'count': 10}),
+                                                   'favorite': "1" if self.favourite else "0",
+                                                   'count': self.count}),
                                   headers={'Content-type': 'application/json; charset=UTF8',
                                            'X-Accept': 'application/json'})
+        self.log_url_data("get", request)
+
         response = urllib2.urlopen(request)
         response_json = json.loads(response.read())
         logger.debug("Reading list with %s items." % len(response_json['list']))

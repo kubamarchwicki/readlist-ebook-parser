@@ -13,8 +13,10 @@ logger = logging.getLogger(__name__)
 
 def run():
     parser = argparse.ArgumentParser(description='Download reading list items')
-    parser.add_argument('-u', '--username', nargs='?', help='Pocket username')
-    parser.add_argument('-p', '--password', nargs='?', help='Pocket password')
+    parser.add_argument('-u', '--username', nargs='?', help='Pocket username', required=True)
+    parser.add_argument('-p', '--password', nargs='?', help='Pocket password', required=True)
+    parser.add_argument('-c', '--count', nargs='?', help='Number of articles to download', default=10)
+    parser.add_argument('-f', '--favourite', help='Download only favourite', action="store_true")
     parser.add_argument('-s', '--sort', nargs='?', help='Sorting order', default='newest')
 
     args = parser.parse_args()
@@ -23,7 +25,10 @@ def run():
 
 
 def controller(args):
-    pocket = Pocket(username=args.username, password=args.password)
+    pocket = Pocket(username=args.username,
+                    password=args.password,
+                    favourite=args.favourite,
+                    count=args.count)
     article_list = pocket.get_list()
 
     print output_template % (date.today().strftime("%d/%m/%Y"), json.dumps(article_list, indent=16))
