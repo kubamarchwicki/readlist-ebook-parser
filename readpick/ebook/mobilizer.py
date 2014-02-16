@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup, Comment
 
 #TODO: different mobilizer than instapaper
 class InstapaperMobilizer(object):
-    mobilizer_url = "http://www.instapaper.com/m?u=%s"
+    mobilizer_url = "http://mobilizer.instapaper.com/m?u=%s"
 
     def url(self, base_url):
         return self.mobilizer_url % base_url
