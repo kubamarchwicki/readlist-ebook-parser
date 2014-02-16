@@ -71,12 +71,7 @@ class Pocket3:
     consumer_key = Config().pocket_v3_consumer_key()
     access_token = None
 
-<<<<<<< HEAD
-    def __init__(self, username=None, password=None):
-        print self.consumer_key
-=======
     def __init__(self, username=None, password=None, favourite=False, count=10):
->>>>>>> aa353bb... Limit number of articles in a single list
         self.username = username
         self.password = password
         self.favourite = favourite

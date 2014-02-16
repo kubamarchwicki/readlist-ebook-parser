@@ -189,12 +189,6 @@ class Page(object):
         logger.debug("Page download completed.")
         self.downloaded = True
 
-        #TODO: remove this sleep when changed from Instapaper to smth else
-        logger.debug("... short break... 30 seconds sleep...")
-        import time
-
-        time.sleep(30)
-
     def download_images(self, domain=None):
         soup = BeautifulSoup(self.text)
 

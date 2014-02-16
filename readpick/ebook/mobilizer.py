@@ -53,11 +53,34 @@ class ReadlistMobilizer(object):
     token = Config().readlist_parser_api_token()
     mobilizer_url = "http://www.readability.com/api/content/v1/parser?url=%s&token=%s"
 
+    from jinja2 import Template
+    article_html = Template(u'''
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>{{ title }}</title>
+</head>
+<body>
+    <h1>{{ title }}</h1>
+    <small>{{ url }}</small>
+    <hr>
+    {{ content }}
+</body>
+</html>
+''')
+
     def url_content(self, base_url):
         url = self.mobilizer_url % (base_url, self.token)
-        with closing(urllib.urlopen(url)) as response:
+        try:
+            response = urllib.urlopen(url)
             response_json = json.loads(response.read())
-            return BeautifulSoup(response_json['content'])
+
+            return BeautifulSoup(self.article_html.render(response_json))
+        except urllib.HTTPError as e:
+            print e.headers
+            raise
 
     def is_correctly_mobilized(self, soup):
         return True

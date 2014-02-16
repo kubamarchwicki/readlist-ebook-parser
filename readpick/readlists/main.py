@@ -23,7 +23,7 @@ def run():
     logger.debug('Command line params %s' % args)
     controller(args)
 
-
+#TODO: unfavourite and archive downloaded articles
 def controller(args):
     pocket = Pocket(username=args.username,
                     password=args.password,
