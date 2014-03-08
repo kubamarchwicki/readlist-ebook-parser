@@ -110,8 +110,11 @@ class Pocket3:
             from urllib import urlencode
             from cookielib import CookieJar
 
+            cj = CookieJar()
+            opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
+
             #authorize request
-            response = urllib2.urlopen(url=self.authorize_url % request_token)
+            response = opener.open(self.authorize_url % request_token)
             page = response.read()
 
             #take form's form_check field
@@ -123,10 +126,9 @@ class Pocket3:
                              route='/auth/approve_access?request_token=%s&from_login=1&permission=md&approve_flag=1&redirect_uri=' % request_token)
 
             #login to the application to authorize app
-            cj = CookieJar()
-            opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
-            opener.open(self.base_url + api_url,
-                        urlencode(form_data))
+            request = urllib2.Request(url=self.base_url + api_url,
+                                  data=urlencode(form_data))
+            opener.open(request)
         except urllib2.HTTPError as e:
             print e.headers
             raise
@@ -136,13 +138,8 @@ class Pocket3:
 
         request_token = self.get_request_token()
 
-        #TODO: fix application authorization process
-        # if self.is_application_authorized(request_token) is False:
-        #     self.authorize_application(request_token)
-
-        print 'Please authorize the app using the following url and press ENTER here'
-        print self.authorize_url % request_token
-        raw_input()
+        if self.is_application_authorized(request_token) is False:
+            self.authorize_application(request_token)
 
         request = urllib2.Request(url=self.base_api_url + api_url,
                                   data=json.dumps({'consumer_key': self.consumer_key, 'code': request_token}),
@@ -201,5 +198,4 @@ class Pocket3:
 
     def log_url_data(self, msg, request):
         logger.debug("""%s URL: %s
-        Data: %s
-        """ % (msg, request.get_full_url(), request.get_data()))
+        Data: %s""" % (msg, request.get_full_url(), request.get_data()))
