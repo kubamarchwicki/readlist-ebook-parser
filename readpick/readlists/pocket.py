@@ -1,6 +1,7 @@
 import json
 import logging
 import urllib2
+from urllib import urlencode
 from readpick.config import Config
 
 logger = logging.getLogger(__name__)
@@ -107,7 +108,6 @@ class Pocket3:
 
         try:
             import re
-            from urllib import urlencode
             from cookielib import CookieJar
 
             cj = CookieJar()
@@ -156,21 +156,21 @@ class Pocket3:
             print e.headers
             raise
 
-    def delete(self, items):
+    def modify(self, items, action):
         api_url = 'send?'
 
         if self.access_token is None:
             self.access_token = self.authorize_session()
 
-        actions = [{'action': 'delete', 'item_id': item_id} for item_id in items]
+        actions = [{'action': action, 'item_id': item_id} for item_id in items]
         params = {'consumer_key': self.consumer_key, 'access_token': self.access_token, 'actions': json.dumps(actions)}
-        url_params = urllib.urlencode(params)
+        url_params = urlencode(params)
         url = ''.join([self.base_api_url, api_url, url_params])
 
         try:
             response = urllib2.urlopen(url)
             response_json = json.loads(response.read())
-            logger.debug('Delete response: %s' % response_json)
+            logger.debug('Modify response for %s: %s' % (action, response_json))
         except urllib2.HTTPError as e:
             print e.headers
 
