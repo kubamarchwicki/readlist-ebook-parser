@@ -12,7 +12,7 @@ Optional parameters
  * `-c [num]` - define the number of articles (items) to download
  * `-s [newest|oldest]` - define sorting order
  * `-mu` - modify after downloading: unfavourite
- * '-ma` - modify after downloading: archive
+ * `-ma` - modify after downloading: archive
 
 Generate epub ebook
 `python readpick/ebook/main.py -o [output_filename] << items_list.json`
